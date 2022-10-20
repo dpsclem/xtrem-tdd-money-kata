@@ -7,6 +7,12 @@ namespace money_problem.Tests;
 
 public class PortfolioShould
 {
+    public PortfolioShould()
+    {
+        Bank bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
+        
+    }
+
     [Fact(DisplayName = "5 USD + 10 EUR = 17 USD")]
     public void Test()
     {
@@ -39,10 +45,15 @@ public class Portfolio
     public void Add(int amount, Currency currency)
         => moneys.Add((amount, currency));
 
-    public double Evaluate(Currency currency)
+    public double Evaluate(Currency currency, Bank bank)
     {
-        if (currency == Currency.USD)
-            return 17;
-        return 2200;
+        double total = 0;
+        foreach (var money in moneys)
+        {
+            var convertedValue = bank.Convert(money.Item1, money.Item2, currency);
+            total += convertedValue;
+        }
+
+        return total;
     }
 }
