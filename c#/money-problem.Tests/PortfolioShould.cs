@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using money_problem.Domain;
 using Xunit;
@@ -48,14 +49,5 @@ public class Portfolio
         => moneys.Add((amount, currency));
 
     public double Evaluate(Currency currency, Bank bank)
-    {
-        double total = 0;
-        foreach (var money in moneys)
-        {
-            var convertedValue = bank.Convert(money.Item1, money.Item2, currency);
-            total += convertedValue;
-        }
-
-        return total;
-    }
+        => moneys.Sum(money => bank.Convert(money.Item1, money.Item2, currency));
 }
