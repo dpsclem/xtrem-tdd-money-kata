@@ -33,14 +33,15 @@ public class PortfolioShould
 
 public class Portfolio
 {
-    public void Add(int p0, Currency usd)
+    
+    public void Add(int amount, Currency currency)
     {
-        
+        this.moneys.Add
     }
 
-    public double Evaluate(Currency usd)
+    public double Evaluate(Currency currency)
     {
-        if (usd == Currency.USD)
+        if (currency == Currency.USD)
             return 17;
         return 2200;
     }
