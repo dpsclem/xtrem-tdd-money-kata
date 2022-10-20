@@ -17,6 +17,18 @@ public class PortfolioShould
 
         usdEvaluation.Should().Be(17);
     }
+    
+    [Fact(DisplayName = "1 USD + 1100 KRW = 2200 KRW")]
+    public void Test2()
+    {
+        Portfolio portfolio = new Portfolio();
+        portfolio.Add(1, Currency.USD);
+        portfolio.Add(1100, Currency.KRW);
+
+        var usdEvaluation = portfolio.Evaluate(Currency.KRW);
+
+        usdEvaluation.Should().Be(2200);
+    }
 }
 
 public class Portfolio
