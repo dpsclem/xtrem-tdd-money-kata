@@ -7,10 +7,12 @@ namespace money_problem.Tests;
 
 public class PortfolioShould
 {
+    private readonly Bank bank;
+
     public PortfolioShould()
     {
-        Bank bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
-        
+        bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
+        bank.AddExchangeRate(Currency.USD, Currency.KRW, 1100);
     }
 
     [Fact(DisplayName = "5 USD + 10 EUR = 17 USD")]
@@ -20,7 +22,7 @@ public class PortfolioShould
         portfolio.Add(5, Currency.USD);
         portfolio.Add(10, Currency.EUR);
 
-        var usdEvaluation = portfolio.Evaluate(Currency.USD);
+        var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
 
         usdEvaluation.Should().Be(17);
     }
@@ -32,7 +34,7 @@ public class PortfolioShould
         portfolio.Add(1, Currency.USD);
         portfolio.Add(1100, Currency.KRW);
 
-        var usdEvaluation = portfolio.Evaluate(Currency.KRW);
+        var usdEvaluation = portfolio.Evaluate(Currency.KRW, bank);
 
         usdEvaluation.Should().Be(2200);
     }
