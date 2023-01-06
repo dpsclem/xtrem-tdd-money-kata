@@ -64,7 +64,15 @@ public class PortfolioShould
 
         var act = () => portfolio.Evaluate(Currency.EUR, bank);
 
-        act.Should().Throw<Exception>().WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
+        act.Should().Throw<MissingExchangeRatesException>().WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
+    }
+}
+
+public class MissingExchangeRatesException : Exception
+{
+    public MissingExchangeRatesException(): base("Missing exchange rate(s): [USD->EUR],[KRW->EUR]")
+    {
+        
     }
 }
 
@@ -76,5 +84,14 @@ public class Portfolio
         => moneys.Add((amount, currency));
 
     public double Evaluate(Currency currency, Bank bank)
-        => moneys.Sum(money => bank.Convert(money.Item1, money.Item2, currency));
+    {
+        try
+        {
+            return moneys.Sum(money => bank.Convert(money.Item1, money.Item2, currency));
+        }
+        catch (MissingExchangeRateException e)
+        {
+            throw new MissingExchangeRatesException();
+        }
+    }
 }
