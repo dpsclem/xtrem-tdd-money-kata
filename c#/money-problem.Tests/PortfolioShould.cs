@@ -82,10 +82,15 @@ public class PortfolioShould
 
 public class MissingExchangeRatesException : Exception
 {
-    public MissingExchangeRatesException(List<MissingExchangeRateException> missingExchangeRates): base("Missing exchange rate(s): [USD->EUR],[KRW->EUR]")
+    public MissingExchangeRatesException(List<MissingExchangeRateException> missingExchangeRates): base("Missing exchange rate(s): " + getExchangeRates(missingExchangeRates))
     {
         
         
+    }
+
+    private static string getExchangeRates(List<MissingExchangeRateException> missingExchangeRateExceptions)
+    {
+        return string.Join(",", missingExchangeRateExceptions.Select(x => "[" + x.Message + "]"));
     }
 }
 
