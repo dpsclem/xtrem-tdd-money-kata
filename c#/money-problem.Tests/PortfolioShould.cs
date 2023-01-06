@@ -18,7 +18,7 @@ public class PortfolioShould
     }
 
     [Fact(DisplayName = "5 USD + 10 EUR = 17 USD")]
-    public void Test()
+    public void AddMoneyInDollarAndEuro()
     {
         var portfolio = new Portfolio();
         portfolio.Add(5, Currency.USD);
@@ -30,7 +30,7 @@ public class PortfolioShould
     }
 
     [Fact(DisplayName = "1 USD + 1100 KRW = 2200 KRW")]
-    public void Test2()
+    public void AddMoneyInDollarAndKoreanWons()
     {
         var portfolio = new Portfolio();
         portfolio.Add(1, Currency.USD);
@@ -42,7 +42,7 @@ public class PortfolioShould
     }
 
     [Fact(DisplayName = "5 USD + 10 EUR + 4 EUR = 21.8 USD")]
-    public void Test3()
+    public void AddMoneyInDollarAndMultipleInEuros()
     {
         var portfolio = new Portfolio();
         portfolio.Add(5, Currency.USD);
@@ -54,8 +54,8 @@ public class PortfolioShould
         usdEvaluation.Should().Be(21.8);
     }
 
-    [Fact(DisplayName = "1 EUR + 1 USD + 1 KRW = ? EUR")]
-    public void Test4()
+    [Fact(DisplayName = "Return missing exchange rates failure")]
+    public void ReturnsMissingExchangeRatesFailure()
     {
         var portfolio = new Portfolio();
         portfolio.Add(1, Currency.EUR);
@@ -64,7 +64,7 @@ public class PortfolioShould
 
         var act = () => portfolio.Evaluate(Currency.EUR, bank);
 
-        act.Should().Throw<Exception>().WithMessage("TODO");
+        act.Should().Throw<Exception>().WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
     }
 }
 
