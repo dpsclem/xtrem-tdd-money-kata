@@ -20,8 +20,9 @@ namespace money_problem.Tests
         [Fact(DisplayName = "4002 KRW / 4 = 1000.5 KRW")]
         public void DivideInKoreanWons()
         {
+            var money = new Money(4002, KRW);
             MoneyCalculator
-                .Divide(4002, KRW, 4)
+                .Divide(money, 4)
                 .Should()
                 .Be(1000.5d);
         }
