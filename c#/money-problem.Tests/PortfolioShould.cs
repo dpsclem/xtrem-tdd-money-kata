@@ -66,12 +66,25 @@ public class PortfolioShould
 
         act.Should().Throw<MissingExchangeRatesException>().WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
     }
+    
+    [Fact(DisplayName = "Return missing exchange rates triangulation")]
+    public void Triangulation()
+    {
+        var portfolio = new Portfolio();
+        portfolio.Add(1, Currency.EUR);
+        portfolio.Add(1, Currency.USD);
+
+        var act = () => portfolio.Evaluate(Currency.EUR, bank);
+
+        act.Should().Throw<MissingExchangeRatesException>().WithMessage("Missing exchange rate(s): [USD->EUR]");
+    }
 }
 
 public class MissingExchangeRatesException : Exception
 {
-    public MissingExchangeRatesException(): base("Missing exchange rate(s): [USD->EUR],[KRW->EUR]")
+    public MissingExchangeRatesException(List<MissingExchangeRateException> missingExchangeRates): base("Missing exchange rate(s): [USD->EUR],[KRW->EUR]")
     {
+        
         
     }
 }
@@ -85,13 +98,26 @@ public class Portfolio
 
     public double Evaluate(Currency currency, Bank bank)
     {
-        try
+        
+        double sum = 0;
+
+        var missingExchangeRates = new List<MissingExchangeRateException>();
+        foreach (var money in moneys)
         {
-            return moneys.Sum(money => bank.Convert(money.Item1, money.Item2, currency));
+            try
+            {
+                sum += bank.Convert(money.Item1, money.Item2, currency);
+            }
+            catch (MissingExchangeRateException e)
+            {
+                missingExchangeRates.Add(e);
+            }
         }
-        catch (MissingExchangeRateException e)
-        {
-            throw new MissingExchangeRatesException();
-        }
+        
+        if (missingExchangeRates.Any())
+            throw new MissingExchangeRatesException(missingExchangeRates);
+        
+        return sum;
+
     }
 }
