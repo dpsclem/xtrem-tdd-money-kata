@@ -16,6 +16,18 @@ public class PortfolioShould
         bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
         bank.AddExchangeRate(Currency.USD, Currency.KRW, 1100);
     }
+    
+    [Fact(DisplayName = "5 USD + 10 USD = 15 USD")]
+    public void AddMoneyInSameCurrency()
+    {
+        var portfolio = new Portfolio();
+        portfolio.Add(5, Currency.USD);
+        portfolio.Add(10, Currency.USD);
+
+        var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
+
+        usdEvaluation.Should().Be(15);
+    }
 
     [Fact(DisplayName = "5 USD + 10 EUR = 17 USD")]
     public void AddMoneyInDollarAndEuro()
