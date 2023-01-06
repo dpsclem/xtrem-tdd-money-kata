@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 namespace money_problem.Domain
 {
     public sealed class Bank
@@ -21,6 +19,9 @@ namespace money_problem.Domain
 
         private static string KeyFor(Currency from, Currency to) => $"{from}->{to}";
 
+        public double Convert(Money money, Currency to) =>
+            this.Convert(money.Amount,money.Currency,to);
+        
         public double Convert(double amount, Currency from, Currency to) =>
             CanConvert(from, to)
                 ? ConvertSafely(amount, from, to)
