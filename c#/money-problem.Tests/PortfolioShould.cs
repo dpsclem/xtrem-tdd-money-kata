@@ -64,34 +64,21 @@ public class PortfolioShould
 
         var act = () => portfolio.Evaluate(Currency.EUR, bank);
 
-        act.Should().Throw<MissingExchangeRatesException>().WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
-    }
-    
-    [Fact(DisplayName = "Return missing exchange rates triangulation")]
-    public void Triangulation()
-    {
-        var portfolio = new Portfolio();
-        portfolio.Add(1, Currency.EUR);
-        portfolio.Add(1, Currency.USD);
-
-        var act = () => portfolio.Evaluate(Currency.EUR, bank);
-
-        act.Should().Throw<MissingExchangeRatesException>().WithMessage("Missing exchange rate(s): [USD->EUR]");
+        act.Should()
+            .Throw<MissingExchangeRatesException>()
+            .WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
     }
 }
 
 public class MissingExchangeRatesException : Exception
 {
-    public MissingExchangeRatesException(List<MissingExchangeRateException> missingExchangeRates): base("Missing exchange rate(s): " + getExchangeRates(missingExchangeRates))
+    public MissingExchangeRatesException(List<MissingExchangeRateException> missingExchangeRates) : base(
+        $"Missing exchange rate(s): {GetExchangeRates(missingExchangeRates)}")
     {
-        
-        
     }
 
-    private static string getExchangeRates(List<MissingExchangeRateException> missingExchangeRateExceptions)
-    {
-        return string.Join(",", missingExchangeRateExceptions.Select(x => "[" + x.Message + "]"));
-    }
+    private static string GetExchangeRates(List<MissingExchangeRateException> missingExchangeRates)
+        => string.Join(",", missingExchangeRates.Select(x => $"[{x.Message}]"));
 }
 
 public class Portfolio
@@ -103,26 +90,21 @@ public class Portfolio
 
     public double Evaluate(Currency currency, Bank bank)
     {
-        
-        double sum = 0;
-
+        double total = 0;
         var missingExchangeRates = new List<MissingExchangeRateException>();
         foreach (var money in moneys)
-        {
             try
             {
-                sum += bank.Convert(money.Item1, money.Item2, currency);
+                total += bank.Convert(money.Item1, money.Item2, currency);
             }
-            catch (MissingExchangeRateException e)
+            catch (MissingExchangeRateException missingExchangeRate)
             {
-                missingExchangeRates.Add(e);
+                missingExchangeRates.Add(missingExchangeRate);
             }
-        }
-        
+
         if (missingExchangeRates.Any())
             throw new MissingExchangeRatesException(missingExchangeRates);
-        
-        return sum;
 
+        return total;
     }
 }
