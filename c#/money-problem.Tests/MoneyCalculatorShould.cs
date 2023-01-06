@@ -10,8 +10,9 @@ namespace money_problem.Tests
         [Fact(DisplayName = "10 EUR x 2 = 20 EUR")]
         public void MultiplyInEuros()
         {
+            var money = new Money(10, EUR);
             MoneyCalculator
-                .Times(10, EUR, 2)
+                .Times(money, 2)
                 .Should()
                 .Be(20d);
         }
@@ -25,4 +26,6 @@ namespace money_problem.Tests
                 .Be(1000.5d);
         }
     }
+
+   
 }
