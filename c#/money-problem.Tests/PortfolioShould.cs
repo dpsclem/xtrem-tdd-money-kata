@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using money_problem.Domain;
 using Xunit;
 
@@ -80,44 +77,5 @@ public class PortfolioShould
         act.Should()
             .Throw<MissingExchangeRatesException>()
             .WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
-    }
-}
-
-public class MissingExchangeRatesException : Exception
-{
-    public MissingExchangeRatesException(List<MissingExchangeRateException> missingExchangeRates) : base(
-        $"Missing exchange rate(s): {GetExchangeRates(missingExchangeRates)}")
-    {
-    }
-
-    private static string GetExchangeRates(List<MissingExchangeRateException> missingExchangeRates)
-        => string.Join(",", missingExchangeRates.Select(x => $"[{x.Message}]"));
-}
-
-public class Portfolio
-{
-    private readonly List<Money> moneys = new();
-
-    public void Add(Money money)
-        => moneys.Add(money);
-
-    public double Evaluate(Currency currency, Bank bank)
-    {
-        double total = 0;
-        var missingExchangeRates = new List<MissingExchangeRateException>();
-        foreach (var money in moneys)
-            try
-            {
-                total += bank.Convert(money, currency);
-            }
-            catch (MissingExchangeRateException missingExchangeRate)
-            {
-                missingExchangeRates.Add(missingExchangeRate);
-            }
-
-        if (missingExchangeRates.Any())
-            throw new MissingExchangeRatesException(missingExchangeRates);
-
-        return total;
     }
 }

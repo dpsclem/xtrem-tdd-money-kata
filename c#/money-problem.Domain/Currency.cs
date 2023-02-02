@@ -1,9 +1,8 @@
-namespace money_problem.Domain
+namespace money_problem.Domain;
+
+public enum Currency
 {
-    public enum Currency
-    {
-        EUR,
-        USD,
-        KRW
-    }
+    EUR,
+    USD,
+    KRW
 }
