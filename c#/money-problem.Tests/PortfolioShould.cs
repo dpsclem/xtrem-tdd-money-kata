@@ -16,13 +16,14 @@ public class PortfolioShould
         bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
         bank.AddExchangeRate(Currency.USD, Currency.KRW, 1100);
     }
-    
+
     [Fact(DisplayName = "5 USD + 10 USD = 15 USD")]
     public void AddMoneyInSameCurrency()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(5, Currency.USD);
-        portfolio.Add(10, Currency.USD);
+
+        portfolio.Add(new Money(5, Currency.USD));
+        portfolio.Add(new Money(10, Currency.USD));
 
         var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
 
@@ -33,8 +34,8 @@ public class PortfolioShould
     public void AddMoneyInDollarAndEuro()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(5, Currency.USD);
-        portfolio.Add(10, Currency.EUR);
+        portfolio.Add(new Money(5, Currency.USD));
+        portfolio.Add(new Money(10, Currency.EUR));
 
         var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
 
@@ -45,8 +46,8 @@ public class PortfolioShould
     public void AddMoneyInDollarAndKoreanWons()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(1, Currency.USD);
-        portfolio.Add(1100, Currency.KRW);
+        portfolio.Add(new Money(1, Currency.USD));
+        portfolio.Add(new Money(1100, Currency.KRW));
 
         var usdEvaluation = portfolio.Evaluate(Currency.KRW, bank);
 
@@ -57,9 +58,9 @@ public class PortfolioShould
     public void AddMoneyInDollarAndMultipleInEuros()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(5, Currency.USD);
-        portfolio.Add(10, Currency.EUR);
-        portfolio.Add(4, Currency.EUR);
+        portfolio.Add(new Money(5, Currency.USD));
+        portfolio.Add(new Money(10, Currency.EUR));
+        portfolio.Add(new Money(4, Currency.EUR));
 
         var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
 
@@ -70,9 +71,9 @@ public class PortfolioShould
     public void ReturnsMissingExchangeRatesFailure()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(1, Currency.EUR);
-        portfolio.Add(1, Currency.USD);
-        portfolio.Add(1, Currency.KRW);
+        portfolio.Add(new Money(1, Currency.EUR));
+        portfolio.Add(new Money(1, Currency.USD));
+        portfolio.Add(new Money(1, Currency.KRW));
 
         var act = () => portfolio.Evaluate(Currency.EUR, bank);
 
@@ -95,10 +96,10 @@ public class MissingExchangeRatesException : Exception
 
 public class Portfolio
 {
-    private readonly List<(int, Currency)> moneys = new();
+    private readonly List<(double, Currency)> moneys = new();
 
-    public void Add(int amount, Currency currency)
-        => moneys.Add((amount, currency));
+    public void Add(Money money)
+        => moneys.Add((money.Amount, money.Currency));
 
     public double Evaluate(Currency currency, Bank bank)
     {
