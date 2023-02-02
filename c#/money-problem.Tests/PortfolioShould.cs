@@ -96,10 +96,10 @@ public class MissingExchangeRatesException : Exception
 
 public class Portfolio
 {
-    private readonly List<(double, Currency)> moneys = new();
+    private readonly List<Money> moneys = new();
 
     public void Add(Money money)
-        => moneys.Add((money.Amount, money.Currency));
+        => moneys.Add(money);
 
     public double Evaluate(Currency currency, Bank bank)
     {
@@ -108,7 +108,7 @@ public class Portfolio
         foreach (var money in moneys)
             try
             {
-                total += bank.Convert(new Money(money.Item1, money.Item2), currency);
+                total += bank.Convert(money, currency);
             }
             catch (MissingExchangeRateException missingExchangeRate)
             {
