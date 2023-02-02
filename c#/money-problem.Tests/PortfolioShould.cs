@@ -107,7 +107,7 @@ public class Portfolio
         foreach (var money in moneys)
             try
             {
-                total += bank.Convert(money.Item1, money.Item2, currency);
+                total += bank.Convert(new Money(money.Item1, money.Item2), currency);
             }
             catch (MissingExchangeRateException missingExchangeRate)
             {
