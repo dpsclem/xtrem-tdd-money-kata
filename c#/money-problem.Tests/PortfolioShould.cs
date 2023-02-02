@@ -22,8 +22,8 @@ public class PortfolioShould
     {
         var portfolio = new Portfolio();
 
-        portfolio.Add(new Money(5, Currency.USD));
-        portfolio.Add(new Money(10, Currency.USD));
+        portfolio.Add(5.Dollars());
+        portfolio.Add(10.Dollars());
 
         var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
 
@@ -34,8 +34,8 @@ public class PortfolioShould
     public void AddMoneyInDollarAndEuro()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(new Money(5, Currency.USD));
-        portfolio.Add(new Money(10, Currency.EUR));
+        portfolio.Add(5.Dollars());
+        portfolio.Add(10.Euros());
 
         var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
 
@@ -46,8 +46,8 @@ public class PortfolioShould
     public void AddMoneyInDollarAndKoreanWons()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(new Money(1, Currency.USD));
-        portfolio.Add(new Money(1100, Currency.KRW));
+        portfolio.Add(1.Dollars());
+        portfolio.Add(1100.KoreanWons());
 
         var usdEvaluation = portfolio.Evaluate(Currency.KRW, bank);
 
@@ -58,9 +58,9 @@ public class PortfolioShould
     public void AddMoneyInDollarAndMultipleInEuros()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(new Money(5, Currency.USD));
-        portfolio.Add(new Money(10, Currency.EUR));
-        portfolio.Add(new Money(4, Currency.EUR));
+        portfolio.Add(5.Dollars());
+        portfolio.Add(10.Euros());
+        portfolio.Add(4.Euros());
 
         var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
 
@@ -71,9 +71,9 @@ public class PortfolioShould
     public void ReturnsMissingExchangeRatesFailure()
     {
         var portfolio = new Portfolio();
-        portfolio.Add(new Money(1, Currency.EUR));
-        portfolio.Add(new Money(1, Currency.USD));
-        portfolio.Add(new Money(1, Currency.KRW));
+        portfolio.Add(1.Euros());
+        portfolio.Add(1.Dollars());
+        portfolio.Add(1.KoreanWons());
 
         var act = () => portfolio.Evaluate(Currency.EUR, bank);
 
