@@ -11,17 +11,16 @@ public class Portfolio
 
     public double Evaluate(Currency currency, Bank bank)
     {
-        double total = 0;
-        var missingExchangeRates = new List<MissingExchangeRateException>();
-
-        foreach (var money in moneys)
-        {
-            var convertionResult = Convert(currency, bank, money);
-            if (convertionResult.HasException)
-                missingExchangeRates.Add(convertionResult.MissingExchangeRate);
-            else
-                total += convertionResult.Money;
-        }
+        var conversionResults = moneys.Select(money => Convert(currency, bank, money)).ToList();
+        
+        var total = conversionResults
+            .Where(result => !result.HasException)
+            .Sum(result => result.Money);
+        
+        var missingExchangeRates = conversionResults
+            .Where(result => result.HasException)
+            .Select(result => result.MissingExchangeRate)
+            .ToList();
 
         if (missingExchangeRates.Any())
             throw new MissingExchangeRatesException(missingExchangeRates);
@@ -30,29 +29,29 @@ public class Portfolio
     }
 
 
-    private static ConvertionResult Convert(Currency currency, Bank bank, Money money)
+    private static ConversionResult Convert(Currency currency, Bank bank, Money money)
     {
         try
         {
-            return new ConvertionResult(bank.Convert(money, currency));
+            return new ConversionResult(bank.Convert(money, currency));
         }
         catch (MissingExchangeRateException missingExchangeRate)
         {
-            return new ConvertionResult(missingExchangeRate);
+            return new ConversionResult(missingExchangeRate);
         }
     }
 }
 
-internal class ConvertionResult
+internal class ConversionResult
 {
     private readonly MissingExchangeRateException? _missingExchangeRate;
 
-    public ConvertionResult(double money)
+    public ConversionResult(double money)
     {
         Money = money;
     }
 
-    public ConvertionResult(MissingExchangeRateException missingExchangeRate)
+    public ConversionResult(MissingExchangeRateException missingExchangeRate)
     {
         _missingExchangeRate = missingExchangeRate;
     }
@@ -60,7 +59,8 @@ internal class ConvertionResult
     public bool HasException
         => _missingExchangeRate != null;
 
-    public MissingExchangeRateException MissingExchangeRate => _missingExchangeRate!;
+    public MissingExchangeRateException MissingExchangeRate
+        => _missingExchangeRate!;
 
     public double Money { get; }
 }
