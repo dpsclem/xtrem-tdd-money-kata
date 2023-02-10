@@ -1,4 +1,6 @@
-﻿namespace money_problem.Domain;
+﻿using money_problem.Tests;
+
+namespace money_problem.Domain;
 
 public class Portfolio
 {
@@ -11,7 +13,9 @@ public class Portfolio
     {
         double total = 0;
         var missingExchangeRates = new List<MissingExchangeRateException>();
-        foreach (var money in moneys)
+        
+        moneys.ForEach(money =>
+        {
             try
             {
                 total += bank.Convert(money, currency);
@@ -20,7 +24,8 @@ public class Portfolio
             {
                 missingExchangeRates.Add(missingExchangeRate);
             }
-
+        });
+        
         if (missingExchangeRates.Any())
             throw new MissingExchangeRatesException(missingExchangeRates);
 

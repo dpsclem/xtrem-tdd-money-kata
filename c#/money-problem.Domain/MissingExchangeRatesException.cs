@@ -1,4 +1,9 @@
-﻿namespace money_problem.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using money_problem.Domain;
+
+namespace money_problem.Tests;
 
 public class MissingExchangeRatesException : Exception
 {
