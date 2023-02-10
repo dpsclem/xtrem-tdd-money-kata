@@ -17,10 +17,10 @@ public class Portfolio
         foreach (var money in moneys)
         {
             var convertionResult = Convert(currency, bank, money);
-            if (convertionResult.HasMoney)
-                total += convertionResult.Money.Value;
-            else
+            if (convertionResult.HasException)
                 missingExchangeRates.Add(convertionResult.MissingExchangeRate);
+            else
+                total += convertionResult.Money;
         }
 
         if (missingExchangeRates.Any())
@@ -45,6 +45,8 @@ public class Portfolio
 
 internal class ConvertionResult
 {
+    private readonly MissingExchangeRateException? _missingExchangeRate;
+
     public ConvertionResult(double money)
     {
         Money = money;
@@ -52,11 +54,13 @@ internal class ConvertionResult
 
     public ConvertionResult(MissingExchangeRateException missingExchangeRate)
     {
-        MissingExchangeRate = missingExchangeRate;
+        _missingExchangeRate = missingExchangeRate;
     }
 
-    public bool HasMoney
-        => Money is not null;
-    public MissingExchangeRateException? MissingExchangeRate { get; }
-    public double? Money { get; }
+    public bool HasException
+        => _missingExchangeRate != null;
+
+    public MissingExchangeRateException MissingExchangeRate => _missingExchangeRate!;
+
+    public double Money { get; }
 }
