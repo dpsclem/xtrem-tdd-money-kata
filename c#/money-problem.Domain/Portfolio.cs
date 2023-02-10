@@ -16,11 +16,11 @@ public class Portfolio
 
         foreach (var money in moneys)
         {
-            var result = Todo2(currency, bank, money);
-            if (result.HasResult)
-                total += result.Result.Value;
+            var convertionResult = Convert(currency, bank, money);
+            if (convertionResult.HasMoney)
+                total += convertionResult.Money.Value;
             else
-                missingExchangeRates.Add(result.MissingExchangeRate);
+                missingExchangeRates.Add(convertionResult.MissingExchangeRate);
         }
 
         if (missingExchangeRates.Any())
@@ -30,34 +30,33 @@ public class Portfolio
     }
 
 
-    private static Todo2Result Todo2(Currency currency, Bank bank, Money money)
+    private static ConvertionResult Convert(Currency currency, Bank bank, Money money)
     {
         try
         {
-            return new Todo2Result(bank.Convert(money, currency));
+            return new ConvertionResult(bank.Convert(money, currency));
         }
         catch (MissingExchangeRateException missingExchangeRate)
         {
-            return new Todo2Result(missingExchangeRate);
+            return new ConvertionResult(missingExchangeRate);
         }
     }
 }
 
-internal class Todo2Result
+internal class ConvertionResult
 {
-    public Todo2Result(double convert)
+    public ConvertionResult(double money)
     {
-        Result = convert;
-        HasResult = true;
+        Money = money;
     }
 
-    public Todo2Result(MissingExchangeRateException missingExchangeRate)
+    public ConvertionResult(MissingExchangeRateException missingExchangeRate)
     {
         MissingExchangeRate = missingExchangeRate;
-        HasResult = false;
     }
 
-    public bool HasResult { get; }
+    public bool HasMoney
+        => Money is not null;
     public MissingExchangeRateException? MissingExchangeRate { get; }
-    public double? Result { get; }
+    public double? Money { get; }
 }
