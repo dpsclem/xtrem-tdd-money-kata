@@ -23,7 +23,7 @@ public class Portfolio
         return new Portfolio(newMoneys);
     }
 
-    public Money Evaluate(Currency currency, Bank bank)
+    public Money Evaluate(Bank bank, Currency currency)
     {
         var results = GetConvertedMoneys(bank, currency);
         return ContainsFailure(results)

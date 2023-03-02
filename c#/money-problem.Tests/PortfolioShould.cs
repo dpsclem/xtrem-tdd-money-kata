@@ -10,7 +10,8 @@ public class PortfolioShould
 
     public PortfolioShould()
     {
-        bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2).AddExchangeRate(Currency.USD, Currency.KRW, 1100);
+        bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
+        bank = bank.AddExchangeRate(Currency.USD, Currency.KRW, 1100);
     }
 
     [Fact(DisplayName = "5 USD + 10 USD = 15 USD")]
@@ -21,7 +22,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(5.Dollars());
         portfolio = portfolio.Add(10.Dollars());
 
-        var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
+        var usdEvaluation = portfolio.Evaluate(bank, Currency.USD);
 
         usdEvaluation.Should().Be(15.Dollars());
     }
@@ -33,7 +34,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(5.Dollars());
         portfolio = portfolio.Add(10.Euros());
 
-        var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
+        var usdEvaluation = portfolio.Evaluate(bank, Currency.USD);
 
         usdEvaluation.Should().Be(17.Dollars());
     }
@@ -45,7 +46,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(1.Dollars());
         portfolio = portfolio.Add(1100.KoreanWons());
 
-        var usdEvaluation = portfolio.Evaluate(Currency.KRW, bank);
+        var usdEvaluation = portfolio.Evaluate(bank, Currency.KRW);
 
         usdEvaluation.Should().Be(2200.KoreanWons());
     }
@@ -58,7 +59,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(10.Euros());
         portfolio = portfolio.Add(4.Euros());
 
-        var usdEvaluation = portfolio.Evaluate(Currency.USD, bank);
+        var usdEvaluation = portfolio.Evaluate(bank, Currency.USD);
 
         usdEvaluation.Should().Be(21.8.Dollars());
     }
@@ -71,7 +72,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(1.Dollars());
         portfolio = portfolio.Add(1.KoreanWons());
 
-        var act = () => portfolio.Evaluate(Currency.EUR, bank);
+        var act = () => portfolio.Evaluate(bank, Currency.EUR);
 
         act.Should()
             .Throw<MissingExchangeRatesException>()
