@@ -4,10 +4,24 @@ namespace money_problem.Domain;
 
 public class Portfolio
 {
-    private readonly List<Money> moneys = new();
+    private readonly List<Money> moneys;
 
-    public void Add(Money money)
-        => moneys.Add(money);
+    public Portfolio()
+    {
+        moneys = new();
+    }
+
+    private Portfolio(List<Money> newMoneys)
+    {
+        moneys = newMoneys;
+    }
+
+    public Portfolio Add(Money money)
+    {
+        List<Money> newMoneys = moneys.ToList();
+        newMoneys.Add(money);
+        return new Portfolio(newMoneys);
+    }
 
     public double Evaluate(Currency currency, Bank bank)
     {
