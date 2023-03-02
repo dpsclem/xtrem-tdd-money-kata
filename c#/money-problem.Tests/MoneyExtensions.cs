@@ -12,4 +12,7 @@ public static class MoneyExtensions
 
     public static Money Dollars(this int amount)
         => new(amount, Currency.USD);
+    
+    public static Money Dollars(this double amount)
+        => new(amount, Currency.USD);
 }

@@ -1,14 +1,14 @@
-﻿using money_problem.Tests;
+using money_problem.Tests;
 
 namespace money_problem.Domain;
 
 public class Portfolio
 {
-    private readonly List<Money> moneys;
+    private readonly ICollection<Money> moneys;
 
     public Portfolio()
     {
-        moneys = new();
+        moneys = new List<Money>();
     }
 
     private Portfolio(List<Money> newMoneys)
@@ -23,60 +23,66 @@ public class Portfolio
         return new Portfolio(newMoneys);
     }
 
-    public double Evaluate(Currency currency, Bank bank)
+    public Money Evaluate(Currency currency, Bank bank)
     {
-        var conversionResults = GetConvertedMoneys(currency, bank);
-        return ContainsFailure(conversionResults)
-                   ? ToException(conversionResults)
-                   : ToTotal(conversionResults);
+        var results = GetConvertedMoneys(bank, currency);
+        return ContainsFailure(results)
+                   ? throw ToException(results)
+                   : ToMoney(results, currency);
     }
 
-    private static double ToTotal(List<ConversionResult> conversionResults)
-        => conversionResults
-            .Sum(result => result.Money);
+    private static MissingExchangeRatesException ToException(IEnumerable<ConversionResult> results)
+        => new(
+            results
+                .Where(result => result.HasException())
+                .Select(result => result.GetExceptionUnsafe())
+                .ToList());
 
-    private static double ToException(List<ConversionResult> conversionResults)
-        => throw new MissingExchangeRatesException(GetFailures(conversionResults));
+    private static Money ToMoney(IEnumerable<ConversionResult> results, Currency currency)
+        => new(results.Sum(result => result.GetMoneyUnsafe().Amount), currency);
 
-    private List<ConversionResult> GetConvertedMoneys(Currency currency, Bank bank)
-        => moneys.Select(money => Convert(currency, bank, money)).ToList();
+    private static bool ContainsFailure(IEnumerable<ConversionResult> results)
+        => results.Any(result => result.HasException());
 
-    private static List<MissingExchangeRateException> GetFailures(List<ConversionResult> conversionResults)
-        => conversionResults
-            .Where(result => result.HasException)
-            .Select(result => result.Exception)
+    private List<ConversionResult> GetConvertedMoneys(Bank bank, Currency currency)
+        => moneys
+            .Select(money => ConvertMoney(bank, currency, money))
             .ToList();
 
-    private static bool ContainsFailure(List<ConversionResult> conversionResults)
-        => conversionResults
-            .Any(result => result.HasException);
-
-
-    private static ConversionResult Convert(Currency currency, Bank bank, Money money)
+    private static ConversionResult ConvertMoney(Bank bank, Currency currency, Money money)
     {
         try
         {
             return new ConversionResult(bank.Convert(money, currency));
         }
-        catch (MissingExchangeRateException missingExchangeRate)
+        catch (MissingExchangeRateException exception)
         {
-            return new ConversionResult(missingExchangeRate);
+            return new ConversionResult(exception);
         }
     }
-}
 
-internal class ConversionResult
-{
-    public ConversionResult(double money)
-        => Money = money;
+    private class ConversionResult
+    {
+        private readonly MissingExchangeRateException? exception;
 
-    public ConversionResult(MissingExchangeRateException exception)
-        => Exception = exception;
+        private readonly Money? money;
 
-    public bool HasException
-        => Exception != null;
+        public ConversionResult(Money money)
+            => this.money = money;
 
-    public MissingExchangeRateException Exception { get; }
+        public ConversionResult(MissingExchangeRateException exception)
+            => this.exception = exception;
 
-    public double Money { get; }
+        public bool HasException()
+            => exception != null;
+
+        public MissingExchangeRateException GetExceptionUnsafe()
+            => exception!;
+
+        public bool HasMoney()
+            => money != null;
+
+        public Money GetMoneyUnsafe()
+            => money!;
+    }
 }
