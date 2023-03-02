@@ -10,8 +10,7 @@ public class PortfolioShould
 
     public PortfolioShould()
     {
-        bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
-        bank.AddExchangeRate(Currency.USD, Currency.KRW, 1100);
+        bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2).AddExchangeRate(Currency.USD, Currency.KRW, 1100);
     }
 
     [Fact(DisplayName = "5 USD + 10 USD = 15 USD")]

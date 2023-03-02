@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using money_problem.Domain;
 using Xunit;
@@ -35,10 +36,10 @@ public class BankShould
             .Should()
             .Be(12);
 
-        _bank.AddExchangeRate(EUR, USD, 1.3);
-
-        _bank.Convert(10.Euros(), USD)
-            .Should()
-            .Be(13);
+            Bank newBank = _bank.AddExchangeRate(EUR, USD, 1.3);
+            
+            newBank.Convert(10.Euros(), USD)
+                .Should()
+                .Be(13);
+        }
     }
-}
