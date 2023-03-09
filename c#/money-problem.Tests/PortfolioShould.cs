@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using money_problem.Domain;
 using Xunit;
 
@@ -9,23 +10,16 @@ public class PortfolioShould
     private readonly Bank bank;
 
     public PortfolioShould()
-    {
-        bank = Bank.WithExchangeRate(Currency.EUR, Currency.USD, 1.2);
-        bank = bank.AddExchangeRate(Currency.USD, Currency.KRW, 1100);
-    }
+        => bank = Bank
+               .WithExchangeRate(Currency.EUR, Currency.USD, 1.2)
+               .AddExchangeRate(Currency.USD, Currency.KRW, 1100);
 
     [Fact(DisplayName = "5 USD + 10 USD = 15 USD")]
     public void AddMoneyInSameCurrency()
-    {
-        var portfolio = new Portfolio();
-
-        portfolio = portfolio.Add(5.Dollars());
-        portfolio = portfolio.Add(10.Dollars());
-
-        var usdEvaluation = portfolio.Evaluate(bank, Currency.USD);
-
-        usdEvaluation.Should().Be(15.Dollars());
-    }
+        => PortfolioWith(5.Dollars(), 10.Dollars())
+            .Evaluate(bank, Currency.USD)
+            .Should()
+            .Be(15.Dollars());
 
     [Fact(DisplayName = "5 USD + 10 EUR = 17 USD")]
     public void AddMoneyInDollarAndEuro()
@@ -78,4 +72,7 @@ public class PortfolioShould
             .Throw<MissingExchangeRatesException>()
             .WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
     }
+    
+    private static Portfolio PortfolioWith(params Money[] moneys)
+        => moneys.Aggregate(new Portfolio(), (current, money) => current.Add(money));
 }

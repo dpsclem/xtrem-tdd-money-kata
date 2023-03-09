@@ -35,9 +35,8 @@ public class BankShould
             .Should()
             .Be(12.Dollars());
 
-        var newBank = _bank.AddExchangeRate(EUR, USD, 1.3);
-
-        newBank.Convert(10.Euros(), USD)
+        _bank.AddExchangeRate(EUR, USD, 1.3)
+            .Convert(10.Euros(), USD)
             .Should()
             .Be(13.Dollars());
     }
