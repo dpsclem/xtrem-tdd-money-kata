@@ -17,21 +17,16 @@ public class PortfolioShould
     [Fact(DisplayName = "5 USD + 10 USD = 15 USD")]
     public void AddMoneyInSameCurrency()
         => PortfolioWith(5.Dollars(), 10.Dollars())
-            .Evaluate(bank, Currency.USD)
+            .EvaluateWithException(bank, Currency.USD)
             .Should()
             .Be(15.Dollars());
 
     [Fact(DisplayName = "5 USD + 10 EUR = 17 USD")]
-    public void AddMoneyInDollarAndEuro()
-    {
-        var portfolio = new Portfolio();
-        portfolio = portfolio.Add(5.Dollars());
-        portfolio = portfolio.Add(10.Euros());
-
-        var usdEvaluation = portfolio.Evaluate(bank, Currency.USD);
-
-        usdEvaluation.Should().Be(17.Dollars());
-    }
+    public void AddMoneyInDollarAndEuro() =>
+        PortfolioWith(5.Dollars(),10.Euros())
+            .EvaluateWithException(bank, Currency.USD)
+            .Should()
+            .Be(17.Dollars());
 
     [Fact(DisplayName = "1 USD + 1100 KRW = 2200 KRW")]
     public void AddMoneyInDollarAndKoreanWons()
@@ -40,7 +35,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(1.Dollars());
         portfolio = portfolio.Add(1100.KoreanWons());
 
-        var usdEvaluation = portfolio.Evaluate(bank, Currency.KRW);
+        var usdEvaluation = portfolio.EvaluateWithException(bank, Currency.KRW);
 
         usdEvaluation.Should().Be(2200.KoreanWons());
     }
@@ -53,7 +48,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(10.Euros());
         portfolio = portfolio.Add(4.Euros());
 
-        var usdEvaluation = portfolio.Evaluate(bank, Currency.USD);
+        var usdEvaluation = portfolio.EvaluateWithException(bank, Currency.USD);
 
         usdEvaluation.Should().Be(21.8.Dollars());
     }
@@ -66,11 +61,8 @@ public class PortfolioShould
         portfolio = portfolio.Add(1.Dollars());
         portfolio = portfolio.Add(1.KoreanWons());
 
-        var act = () => portfolio.Evaluate(bank, Currency.EUR);
-
-        act.Should()
-            .Throw<MissingExchangeRatesException>()
-            .WithMessage("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
+        portfolio.Evaluate(bank, Currency.EUR).GetExceptionUnsafe().Should()
+            .Be(new MissingExchangeRatesException("Missing exchange rate(s): [USD->EUR],[KRW->EUR]"));
     }
     
     private static Portfolio PortfolioWith(params Money[] moneys)

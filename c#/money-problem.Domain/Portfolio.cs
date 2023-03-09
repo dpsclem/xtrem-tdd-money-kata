@@ -23,7 +23,7 @@ public class Portfolio
         return new Portfolio(newMoneys);
     }
 
-    public Money Evaluate(Bank bank, Currency currency)
+    public Money EvaluateWithException(Bank bank, Currency currency)
     {
         var results = GetConvertedMoneys(bank, currency);
         return ContainsFailure(results)
@@ -61,7 +61,7 @@ public class Portfolio
         }
     }
 
-    private class ConversionResult
+    public class ConversionResult
     {
         private readonly MissingExchangeRateException? exception;
 
@@ -84,5 +84,17 @@ public class Portfolio
 
         public Money GetMoneyUnsafe()
             => money!;
+    }
+
+    public ConversionResult Evaluate(Bank bank, Currency currency)
+    {
+        try
+        {
+            return new ConversionResult(EvaluateWithException(bank, currency));
+        }
+        catch (MissingExchangeRateException exception)
+        {
+            return new ConversionResult(exception);
+        }
     }
 }
