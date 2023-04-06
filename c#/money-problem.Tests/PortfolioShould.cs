@@ -63,8 +63,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(1.Dollars());
         portfolio = portfolio.Add(1.KoreanWons());
 
-        var missingExchangeRateException = portfolio.Evaluate(bank, Currency.EUR).GetExceptionUnsafe();
-        missingExchangeRateException.Message.Should().Be("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
+        portfolio.Evaluate(bank, Currency.EUR).GetFailureUnsafe().Should().Be("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
     }
     
     private static Portfolio PortfolioWith(params Money[] moneys)

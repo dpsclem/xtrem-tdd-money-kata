@@ -27,7 +27,7 @@ public class Portfolio
         => new(
             results
                 .Where(result => result.HasException())
-                .Select(result => result.GetExceptionUnsafe())
+                .Select(result => result.GetFailureUnsafe())
                 .ToList());
 
     private static Money ToMoney(IEnumerable<ConversionResult<MissingExchangeRateException>> results, Currency currency)
@@ -68,7 +68,7 @@ public class Portfolio
         public bool HasException()
             => exception != null;
 
-        public T GetExceptionUnsafe()
+        public T GetFailureUnsafe()
             => exception!;
 
         public bool HasMoney()
@@ -78,18 +78,11 @@ public class Portfolio
             => money!;
     }
 
-    public ConversionResult<MissingExchangeRatesException> Evaluate(Bank bank, Currency currency)
+    public ConversionResult<string> Evaluate(Bank bank, Currency currency)
     {
-        try
-        {
-            var results = GetConvertedMoneys(bank, currency);
-            return new ConversionResult<MissingExchangeRatesException>(ContainsFailure(results)
-                ? throw ToException(results)
-                : ToMoney(results, currency));
+        var results = GetConvertedMoneys(bank, currency);
+            return ContainsFailure(results) ? 
+                new ConversionResult<string>(ToException(results).Message)
+                : new ConversionResult<string>(ToMoney(results, currency));
         }
-        catch (MissingExchangeRatesException exception)
-        {
-            return new ConversionResult<MissingExchangeRatesException>(exception);
-        }
-    }
 }
