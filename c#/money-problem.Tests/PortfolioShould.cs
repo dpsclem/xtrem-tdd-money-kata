@@ -17,14 +17,16 @@ public class PortfolioShould
     [Fact(DisplayName = "5 USD + 10 USD = 15 USD")]
     public void AddMoneyInSameCurrency()
         => PortfolioWith(5.Dollars(), 10.Dollars())
-            .EvaluateWithException(bank, Currency.USD)
+            .Evaluate(bank, Currency.USD)
+            .GetMoneyUnsafe()
             .Should()
             .Be(15.Dollars());
 
     [Fact(DisplayName = "5 USD + 10 EUR = 17 USD")]
     public void AddMoneyInDollarAndEuro() =>
         PortfolioWith(5.Dollars(),10.Euros())
-            .EvaluateWithException(bank, Currency.USD)
+            .Evaluate(bank, Currency.USD)
+            .GetMoneyUnsafe()
             .Should()
             .Be(17.Dollars());
 
@@ -35,7 +37,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(1.Dollars());
         portfolio = portfolio.Add(1100.KoreanWons());
 
-        var usdEvaluation = portfolio.EvaluateWithException(bank, Currency.KRW);
+        var usdEvaluation = portfolio.Evaluate(bank, Currency.KRW).GetMoneyUnsafe();
 
         usdEvaluation.Should().Be(2200.KoreanWons());
     }
@@ -48,7 +50,7 @@ public class PortfolioShould
         portfolio = portfolio.Add(10.Euros());
         portfolio = portfolio.Add(4.Euros());
 
-        var usdEvaluation = portfolio.EvaluateWithException(bank, Currency.USD);
+        var usdEvaluation = portfolio.Evaluate(bank, Currency.USD).GetMoneyUnsafe();
 
         usdEvaluation.Should().Be(21.8.Dollars());
     }
@@ -61,8 +63,8 @@ public class PortfolioShould
         portfolio = portfolio.Add(1.Dollars());
         portfolio = portfolio.Add(1.KoreanWons());
 
-        portfolio.Evaluate(bank, Currency.EUR).GetExceptionUnsafe().Should()
-            .Be(new MissingExchangeRatesException("Missing exchange rate(s): [USD->EUR],[KRW->EUR]"));
+        var missingExchangeRateException = portfolio.Evaluate(bank, Currency.EUR).GetExceptionUnsafe();
+        missingExchangeRateException.Message.Should().Be("Missing exchange rate(s): [USD->EUR],[KRW->EUR]");
     }
     
     private static Portfolio PortfolioWith(params Money[] moneys)
