@@ -35,7 +35,7 @@ public class Portfolio
     {
         try
         {
-            return new ConversionResult<MissingExchangeRateException>(bank.Convert(money, currency));
+            return new ConversionResult<MissingExchangeRateException>(bank.ConvertOld(money, currency));
         }
         catch (MissingExchangeRateException exception)
         {
