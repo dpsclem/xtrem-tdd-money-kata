@@ -15,12 +15,12 @@ public class ConversionResult
     public bool HasFailure()
         => failureMessage != null;
 
-    public string GetFailureUnsafe()
+    public string Failure
         => failureMessage!;
 
     public bool HasMoney()
         => money != null;
 
-    public Money GetMoneyUnsafe()
+    public Money Money
         => money!;
 }

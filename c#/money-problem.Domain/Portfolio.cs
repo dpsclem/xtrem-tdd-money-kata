@@ -18,7 +18,7 @@ public class Portfolio
     }
 
     private static Money ToMoney(IEnumerable<ConversionResult> results, Currency currency)
-        => new(results.Sum(result => result.GetMoneyUnsafe().Amount), currency);
+        => new(results.Sum(result => result.Money.Amount), currency);
 
     private static bool ContainsFailure(IEnumerable<ConversionResult> results)
         => results.Any(result => result.HasFailure());
@@ -50,6 +50,6 @@ public class Portfolio
         List<ConversionResult> results)
         => results
             .Where(result => result.HasFailure())
-            .Select(result => result.GetFailureUnsafe())
+            .Select(result => result.Failure)
             .ToList();
 }
