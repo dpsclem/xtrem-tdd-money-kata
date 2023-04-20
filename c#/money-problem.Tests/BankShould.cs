@@ -11,18 +11,20 @@ public class BankShould
 
     [Fact(DisplayName = "10 EUR -> USD = 12 USD")]
     public void ConvertEuroToUsd()
-        => _bank.ConvertOld(10.Euros(), USD)
+        => _bank.Convert(10.Euros(), USD)
+            .GetMoneyUnsafe()
             .Should()
             .Be(12.Dollars());
 
     [Fact(DisplayName = "10 EUR -> EUR = 10 EUR")]
     public void ConvertMoneyInSameCurrency()
-        => _bank.ConvertOld(10.Euros(), EUR)
+        => _bank.Convert(10.Euros(), EUR)
+            .GetMoneyUnsafe()
             .Should()
             .Be(10.Euros());
 
     [Fact(DisplayName = "Throws a MissingExchangeRateException in case of missing exchange rates")]
-    public void ConvertWithMissingExchangeRateShouldThrowException()
+    public void ReturnFailureWhenMissingExchangeRate()
         => _bank.Convert(10.Euros(), KRW)
             .GetFailureUnsafe()
             .Should()
@@ -31,12 +33,14 @@ public class BankShould
     [Fact(DisplayName = "Conversion with different exchange rates EUR -> USD")]
     public void ConvertWithDifferentExchangeRates()
     {
-        _bank.ConvertOld(10.Euros(), USD)
+        _bank.Convert(10.Euros(), USD)
+            .GetMoneyUnsafe()
             .Should()
             .Be(12.Dollars());
 
         _bank.AddExchangeRate(EUR, USD, 1.3)
-            .ConvertOld(10.Euros(), USD)
+            .Convert(10.Euros(), USD)
+            .GetMoneyUnsafe()
             .Should()
             .Be(13.Dollars());
     }
