@@ -33,11 +33,6 @@ public sealed class Bank
     private bool CanConvert(Currency from, Currency to)
         => from == to || _exchangeRates.ContainsKey(KeyFor(from, to));
 
-    internal ConversionResult ConvertWithConversionResult(Money money, Currency to)
-        => CanConvert(money.Currency, to)
-               ? ToResult(money, to)
-               : ToFailure(money, to);
-
     private static ConversionResult ToFailure(Money money, Currency to)
         => new($"{money.Currency}->{to}");
 
@@ -46,7 +41,9 @@ public sealed class Bank
 
     public Either<string,Money> Convert(Money money, Currency currency)
     {
-        var result = this.ConvertWithConversionResult(money, currency);
+        var result = CanConvert(money.Currency, currency)
+            ? ToResult(money, currency)
+            : ToFailure(money, currency);
         return result.HasFailure()
                    ? result.Failure!
                    : result.Money!;

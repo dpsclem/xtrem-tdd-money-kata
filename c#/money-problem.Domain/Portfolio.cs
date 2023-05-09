@@ -27,11 +27,10 @@ public class Portfolio
 
     private List<ConversionResult> GetConvertedMoneys(Bank bank, Currency currency)
         => moneys
-            .Select(money => ConvertMoney(bank, currency, money))
+            .Select(money => bank.Convert(money, currency))
+            .Select(x => x.Match(money => ConversionResult.FromMoney(money), 
+                    failure => ConversionResult.FromFailure(failure)))
             .ToList();
-
-    private static ConversionResult ConvertMoney(Bank bank, Currency currency, Money money)
-        => bank.ConvertWithConversionResult(money, currency);
 
     private ConversionResult EvaluateWithConversionResult(Bank bank, Currency currency)
     {
