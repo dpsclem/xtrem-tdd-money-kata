@@ -1,3 +1,5 @@
+using LanguageExt;
+
 namespace money_problem.Domain;
 
 public sealed class Bank
@@ -31,7 +33,7 @@ public sealed class Bank
     private bool CanConvert(Currency from, Currency to)
         => from == to || _exchangeRates.ContainsKey(KeyFor(from, to));
 
-    public ConversionResult Convert(Money money, Currency to)
+    internal ConversionResult ConvertWithConversionResult(Money money, Currency to)
         => CanConvert(money.Currency, to)
                ? ToResult(money, to)
                : ToFailure(money, to);
@@ -41,4 +43,12 @@ public sealed class Bank
 
     private ConversionResult ToResult(Money money, Currency to)
         => new(ConvertSafely(money, to));
+
+    public Either<string,Money> Convert(Money money, Currency currency)
+    {
+        var result = this.ConvertWithConversionResult(money, currency);
+        return result.HasFailure()
+                   ? result.Failure!
+                   : result.Money!;
+    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace money_problem.Domain;
 
-public class ConversionResult
+internal class ConversionResult
 {
     public ConversionResult(Money money)
         => Money = money;

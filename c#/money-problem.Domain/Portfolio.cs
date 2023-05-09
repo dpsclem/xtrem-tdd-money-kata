@@ -31,7 +31,7 @@ public class Portfolio
             .ToList();
 
     private static ConversionResult ConvertMoney(Bank bank, Currency currency, Money money)
-        => bank.Convert(money, currency);
+        => bank.ConvertWithConversionResult(money, currency);
 
     private ConversionResult EvaluateWithConversionResult(Bank bank, Currency currency)
     {
