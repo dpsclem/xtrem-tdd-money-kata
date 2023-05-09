@@ -35,21 +35,18 @@ public class Portfolio
     {
         var results = GetConvertedMoneys(bank, currency);
         return ContainsFailure(results)
-                   ? ToFailure(results)
-                   : new ConversionResult(ToMoney(results, currency));
+                   ? ConversionResult.FromFailure(ToFailure(results))
+                   : ConversionResult.FromMoney(ToSuccess(results, currency));
     }
 
-    private static ConversionResult ToFailure(List<ConversionResult> results)
-    {
-        var missingExchangeRates = GetMissingExchangeRates(results);
-        return new ConversionResult(
-            $"Missing exchange rate(s): {string.Join(",", missingExchangeRates.Select(x => $"[{x}]"))}");
-    }
+    private static Money ToSuccess(IEnumerable<ConversionResult> results, Currency currency)
+        => new(results.Where(result => result.HasSuccess()).Sum(result => result.Money!.Amount), currency);
 
-    private static List<string> GetMissingExchangeRates(
-        List<ConversionResult> results)
-        => results
-            .Where(result => result.HasFailure())
-            .Select(result => result.Failure)
-            .ToList();
+    private static string ToFailure(IEnumerable<ConversionResult> results)
+        => $"Missing exchange rate(s): {GetMissingRates(results.Where(result => result.HasFailure()).Select(result => result.Failure!))}";
+
+    private static string GetMissingRates(IEnumerable<string> missingRates)
+        => missingRates
+            .Select(value => $"[{value}]")
+            .Aggregate((r1, r2) => $"{r1},{r2}");
 }
