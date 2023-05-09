@@ -2,25 +2,25 @@
 
 public class ConversionResult
 {
-    private readonly string? failureMessage;
-
-    private readonly Money? money;
-
     public ConversionResult(Money money)
-        => this.money = money;
+        => Money = money;
 
-    public ConversionResult(string failureMessage)
-        => this.failureMessage = failureMessage;
+    public ConversionResult(string failure)
+        => Failure = failure;
+
+    public string? Failure { get; }
+
+    public Money? Money { get; }
 
     public bool HasFailure()
-        => failureMessage != null;
+        => Failure is not null;
 
-    public string Failure
-        => failureMessage!;
+    public bool HasSuccess()
+        => Money is not null;
 
-    public bool HasMoney()
-        => money != null;
+    public static ConversionResult FromFailure(string failure)
+        => new(failure);
 
-    public Money Money
-        => money!;
+    public static ConversionResult FromMoney(Money money)
+        => new(money);
 }
