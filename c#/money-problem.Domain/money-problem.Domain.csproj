@@ -7,4 +7,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentAssertions.LanguageExt" Version="0.4.0" />
+      <PackageReference Include="LanguageExt.Core" Version="4.4.3" />
+    </ItemGroup>
+
 </Project>

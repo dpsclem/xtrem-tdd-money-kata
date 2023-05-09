@@ -1,3 +1,5 @@
+using LanguageExt;
+
 namespace money_problem.Domain;
 
 public class Portfolio
@@ -31,7 +33,7 @@ public class Portfolio
     private static ConversionResult ConvertMoney(Bank bank, Currency currency, Money money)
         => bank.Convert(money, currency);
 
-    public ConversionResult Evaluate(Bank bank, Currency currency)
+    private ConversionResult EvaluateWithConversionResult(Bank bank, Currency currency)
     {
         var results = GetConvertedMoneys(bank, currency);
         return ContainsFailure(results)
@@ -49,4 +51,12 @@ public class Portfolio
         => missingRates
             .Select(value => $"[{value}]")
             .Aggregate((r1, r2) => $"{r1},{r2}");
+
+    public Either<string, Money> Evaluate(Bank bank, Currency currency)
+    {
+        var result = EvaluateWithConversionResult(bank, currency);
+        return result.HasFailure()
+                   ? result.Failure!
+                   : result.Money!;
+    }
 }
